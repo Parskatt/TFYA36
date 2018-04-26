@@ -2,7 +2,7 @@ clear
 close all
 global A;
 A = 0.2;
-epsilon = A*pi/1.99;
+epsilon = A*pi/2;
 sim_t = 100;
 t_vec = 1:sim_t;
 theta = -pi/2:0.01:3*pi/2;
