@@ -1,0 +1,21 @@
+function [ f_theta ] = f(theta)
+global A;
+%f Multiplies the angle theta with A if theta < pi/2 else A(pi-theta)
+
+%Make data conform to f(theta + 2*pi) = f(theta)
+outside = logical((theta<-pi/2)+(theta > 3*pi/2));
+
+too_small = theta<-pi/2;
+too_big = theta > 3*pi/2;
+theta(too_small) = theta(too_small)+2*pi;
+theta(too_big) = theta(too_big)-2*pi;
+
+lows = theta < pi/2;
+highs = theta >= pi/2;
+
+
+
+f_theta(lows) = A*theta(lows);
+f_theta(highs) = A*(pi - theta(highs));
+end
+
