@@ -1,11 +1,11 @@
 clear
 close all
 global A;
-A = 0.2;
-epsilon = A*pi/2;
-sim_t = 100;
+A = 0.002;
+epsilon = A*pi/1.99;
+sim_t = 1000;
 t_vec = 1:sim_t;
-theta = -pi/2:0.01:3*pi/2;
+theta = -pi/2:0.01:pi/2;
 %%
 evo = zeros([length(theta) sim_t]);
 for t = t_vec 
@@ -15,3 +15,6 @@ end
 hold off
 figure(1);
 plot(t_vec,evo);%evo(1,:));
+ylim([-pi/2 pi])
+xlim([1 length(t_vec)])
+title(['A = ',num2str(A)])

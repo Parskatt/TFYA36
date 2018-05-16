@@ -19,4 +19,6 @@ function [] = init(assigment,problem)
         cd (totpath)
     end
     addpath(genpath(pwd))
+    mfiles = dir('*.m');
+    edit(mfiles.name);
 end
