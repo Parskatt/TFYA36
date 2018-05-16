@@ -10,7 +10,7 @@ y = 0:0.01:1;
 X_begin = X;
 Y_begin = Y;
 %% Simulate
-t_vec = 2:50;
+t_vec = 2:5000;
 X_vec = zeros([size(X), length(t_vec)+1]);
 Y_vec = zeros([size(Y), length(t_vec)+1]);
 XY_vec = zeros([length(t_vec), size(Y),2]);
@@ -26,7 +26,7 @@ for t = t_vec
     XY_vec(t,:,:,2) = Y;
 end
 %% Long simulate
-t_vec = 2:100000;
+t_vec = 2:3;
 for t = t_vec
     [X,Y] = mapxy(X,Y);
 end
@@ -39,22 +39,41 @@ imagesc(result);
 figure(1);
 hist3(squeeze(XY_vec(:,30,70,:)),'Nbins',[32 32]);
 legend('Num of elements in each bin')
-title('Support for ergodicity: starting at x=0.01, y= 0.01, alpha = 1, b = 1/3, t = 5000')
+title('Support for ergodicity: starting at x=0.30, y= 0.70, alpha = 1, b = 1, t = 5000')
 %% Plot one boi
 plot3(squeeze(X_vec(23,40,:)),squeeze(Y_vec(50,50,:)),[1 t_vec]);
-%% Cat mapping (just a circle)
-circle = (X_begin-0.5).^2 + (Y_begin-0.5).^2 < 0.2;
-idx = sub2ind(size(X),int16(Y(circle)*100)+1,int16(X(circle)*100)+1);
+%% Bear mapping (just a bear)
+% build bear
+head = (X_begin-0.5).^2 + (Y_begin-0.5).^2 < 0.1;
+ears = (X_begin-0.25).^2 + (Y_begin-0.25).^2 < 0.01|  (X_begin-0.75).^2 + (Y_begin-0.25).^2 < 0.01;
+eyes = (X_begin-0.4).^2 + (Y_begin-0.4).^2 < 0.005|  (X_begin-0.6).^2 + (Y_begin-0.4).^2 < 0.005;
+nose = (X_begin-0.5).^2 + (Y_begin-0.5).^2 < 0.0025;
+bear = xor((head | ears),eyes | nose);
+%% 
+Y2 = squeeze(Y_vec(:,:,2)); X2 = squeeze(X_vec(:,:,2));
+Y3 = squeeze(Y_vec(:,:,3)); X3 = squeeze(X_vec(:,:,3));
+Y100 = squeeze(Y_vec(:,:,100)); X100 = squeeze(X_vec(:,:,100));
+idx2 = sub2ind(size(X),int16(Y2(bear)*100)+1,int16(X2(bear)*100)+1);
+idx3 = sub2ind(size(X),int16(Y3(bear)*100)+1,int16(X3(bear)*100)+1);
+idxend = sub2ind(size(X),int16(Y100(bear)*100)+1,int16(X100(bear)*100)+1);
+%%
 beginning = zeros(size(X));
 result = zeros(size(X));
-beginning(circle) = 1;
-result(idx) = 1;
-figure(2)
-imagesc(beginning)
-title('Beginning unperturbed circle')
-figure(3)
-imagesc(result)
-title('The resulting mix')
+resultend = zeros(size(X));
+resultend(idxend) = 1;
+beginning(bear) = 1;
+result(idx2) = 1;
 
+%%
+figure(2);
+subplot(131);
+imagesc(beginning)
+title('Beginning unperturbed bear')
+subplot(132);
+imagesc(result)
+title('First iteration')
+subplot(133);
+imagesc(resultend)
+title('100th iteration')
 
 

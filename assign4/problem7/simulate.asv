@@ -1,0 +1,71 @@
+global alpha;
+alpha = 1;
+global b;
+b = 1;
+%% Setup
+x = 0:0.01:1;
+y = 0:0.01:1;
+
+[X,Y] = meshgrid(x,y);
+X_begin = X;
+Y_begin = Y;
+%% Simulate
+t_vec = 2:5000;
+X_vec = zeros([size(X), length(t_vec)+1]);
+Y_vec = zeros([size(Y), length(t_vec)+1]);
+XY_vec = zeros([length(t_vec), size(Y),2]);
+X_vec(:,:,1) = X;
+Y_vec(:,:,1) = Y;
+XY_vec(1,:,:,1) = X;
+XY_vec(1,:,:,2) = Y;
+for t = t_vec
+    [X,Y] = mapxy(X,Y);
+    X_vec(:,:,t) = X;
+    Y_vec(:,:,t) = Y;
+    XY_vec(t,:,:,1) = X;
+    XY_vec(t,:,:,2) = Y;
+end
+%% Long simulate
+t_vec = 2:100000;
+for t = t_vec
+    [X,Y] = mapxy(X,Y);
+end
+%% Fixed points
+fixpts = (X_begin-X).^2+(Y_begin-Y).^2 < 0.0001;
+result = zeros(size(X));
+result(fixpts) = 1;
+imagesc(result);
+%% Histogram
+figure(1);
+hist3(squeeze(XY_vec(:,30,70,:)),'Nbins',[32 32]);
+legend('Num of elements in each bin')
+title('Support for ergodicity: starting at x=0.30, y= 0.70, alpha = 1, b = 1, t = 5000')
+%% Plot one boi
+plot3(squeeze(X_vec(23,40,:)),squeeze(Y_vec(50,50,:)),[1 t_vec]);
+%% Bear mapping (just a bear)
+head = (X_begin-0.5).^2 + (Y_begin-0.5).^2 < 0.1;
+ears = (X_begin-0.25).^2 + (Y_begin-0.25).^2 < 0.01|  (X_begin-0.75).^2 + (Y_begin-0.25).^2 < 0.01;
+eyes = (X_begin-0.4).^2 + (Y_begin-0.4).^2 < 0.005|  (X_begin-0.6).^2 + (Y_begin-0.4).^2 < 0.005;
+nose = (X_begin-0.5).^2 + (Y_begin-0.5).^2 < 0.0025;
+bear = xor((head | ears),eyes | nose);
+Y2 = squeeze(Y_vec(:,:,2)); X2 = squeeze(X_vec(:,:,2));
+Y3 = squeeze(Y_vec(:,:,3)); X3 = squeeze(X_vec(:,:,3));
+Y100 = squeeze(Y_vec(:,:,100)); X100 = squeeze(X_vec(:,:,100));
+idx2 = sub2ind(size(X),int16(Y2(bear)*100)+1,int16(X2(bear)*100)+1);
+idx3 = sub2ind(size(X),int16(Y3(bear)*100)+1,int16(X3(bear)*100)+1);
+idxend = sub2ind(size(X),int16(Y100(bear)*100)+1,int16(X100(bear)*100)+1);
+%%
+beginning = zeros(size(X));
+result = zeros(size(X));
+beginning(bear) = 1;
+result(idx2) = 1;
+figure(2)
+subfigure 113;
+imagesc(beginning)
+title('Beginning unperturbed bear')
+figure(3)
+imagesc(result)
+title('The resulting bear')
+
+
+
